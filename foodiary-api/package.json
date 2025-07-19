@@ -21,9 +21,11 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
     "@types/aws-lambda": "^8.10.152",
+    "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.44.3",
     "i": "^0.3.7",
+    "jsonwebtoken": "^9.0.2",
     "npm": "^11.4.2",
     "zod": "^4.0.5"
   }
