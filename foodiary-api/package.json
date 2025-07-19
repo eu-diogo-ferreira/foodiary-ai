@@ -23,6 +23,7 @@
     "@types/aws-lambda": "^8.10.152",
     "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.2",
+    "date-fns": "^4.1.0",
     "drizzle-orm": "^0.44.3",
     "i": "^0.3.7",
     "jsonwebtoken": "^9.0.2",
