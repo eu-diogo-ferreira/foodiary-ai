@@ -12,6 +12,7 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^24.0.15",
+    "dotenv": "^17.2.0",
     "drizzle-kit": "^0.31.4",
     "serverless-offline": "^14.4.0",
     "tsx": "^4.20.3",
@@ -20,6 +21,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
     "@types/aws-lambda": "^8.10.152",
+    "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.44.3",
     "i": "^0.3.7",
     "npm": "^11.4.2",
