@@ -43,8 +43,6 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
   async function handleStopRecording() {
     await audioRecorder.stop();
     setAudioUri(audioRecorder.uri);
-    
-    alert(audioRecorder.uri);
   }
 
   function handleDeleteAudio() {
