@@ -1,9 +1,37 @@
-import { Text } from 'react-native';
+import { Controller, useFormContext } from 'react-hook-form';
+import { OptionsSelector } from '../options-selector';
+import { SignUpFormData } from './sign-up-schema';
 
 export function GoalStep() {
+  const form = useFormContext<SignUpFormData>();
+
   return (
-    <Text>
-      Goal Step
-    </Text>
+    <Controller
+      control={form.control}
+      name="goal"
+      render={({ field }) => (
+        <OptionsSelector
+          value={field.value}
+          onChange={field.onChange}
+          options={[
+            {
+              icon: '🥦',
+              title: 'Perder peso',
+              value: 'lose',
+            },
+            {
+              icon: '🍍',
+              title: 'Manter o peso',
+              value: 'maintain',
+            },
+            {
+              icon: '🥩',
+              title: 'Ganhar peso',
+              value: 'gain',
+            },
+          ]}
+        />
+      )}
+    />
   );
 }
