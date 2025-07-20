@@ -11,6 +11,10 @@ import {
 
 import './styles/global.css'
 import { useEffect } from 'react';
+import { HomeHeader } from './components/home-header';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { DateSwitcher } from './components/date-switcher';
+import { DailyStats } from './components/daily-stats';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,9 +38,33 @@ export default function App() {
   }
 
   return (
-    <View className="bg-lime-500 flex-1 items-center justify-center">
-      <Text className="text-base sans-regular">Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View className="bg-white flex-1">
+      <SafeAreaProvider>
+        <HomeHeader />
+        <DateSwitcher />
+        <View className="mt-2">
+          <DailyStats
+            calories={{
+              current: 2000,
+              goal: 2500,
+            }}
+            proteins={{
+              current: 1500,
+              goal: 2500,
+            }}
+            carbohydrates={{
+              current: 1000,
+              goal: 2500,
+            }}
+            fats={{
+              current: 500,
+              goal: 2500,
+            }}
+          />
+        </View>
+
+        <View className="h-px bg-gray-200 mt-7" />
+      </SafeAreaProvider>
     </View>
   );
 }
