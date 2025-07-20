@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { ArrowLeftIcon } from 'lucide-react-native';
 import React from 'react';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import z from 'zod';
 import { AuthLayout } from '../../components/auth-layout';
 import { Button } from '../../components/button';
@@ -32,6 +32,7 @@ export default function SignIn() {
       await signIn(formData);
     } catch (error) {
       console.log(error);
+      Alert.alert('Credenciais inválidas!');
     }
   });
 
@@ -82,7 +83,11 @@ export default function SignIn() {
           <Button onPress={router.back} size="icon" color="gray">
             <ArrowLeftIcon size={20} color={colors.black[700]} />
           </Button>
-          <Button className="flex-1" onPress={handleSubmit}>
+          <Button
+            className="flex-1"
+            onPress={handleSubmit}
+            loading={form.formState.isSubmitting}
+          >
             Entrar
           </Button>
         </View>

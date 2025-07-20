@@ -16,6 +16,7 @@ import { WeightStep } from '../../components/sign-up-steps/weight-step';
 import { ActivityLevelStep } from '../../components/sign-up-steps/activity-level-step';
 import { AccountStep } from '../../components/sign-up-steps/account-step';
 import { useAuth } from '../../hooks/use-auth';
+import { isAxiosError } from 'axios';
 
 export default function SignUp() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -102,15 +103,15 @@ export default function SignUp() {
         },
       });
     } catch (error) {
-      console.log(error);
+      if (isAxiosError(error)) {
+        console.log(JSON.stringify(error.response?.data, null, 2));
+      }
       Alert.alert('Erro ao criar a conta. Tente novamente.');
     }
   });
 
   const currentStep = steps[currentStepIndex];
   const isLastStep = currentStepIndex === steps.length - 1;
-
-  console.log(form.formState.errors)
 
   return (
     <AuthLayout
@@ -129,7 +130,11 @@ export default function SignUp() {
           </Button>
           
           {isLastStep ? (
-            <Button className="flex-1" onPress={handleSubmit}>
+            <Button
+              className="flex-1"
+              onPress={handleSubmit} 
+              loading={form.formState.isSubmitting}
+            >
               Criar conta
             </Button>
           ) : (
