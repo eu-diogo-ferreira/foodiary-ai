@@ -9,24 +9,30 @@ import { Input } from '../../components/input';
 import { colors } from '../../styles/colors';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuth } from '../../hooks/use-auth';
 
 const schema = z.object({
   email: z.email('Informe um e-mail válido'),
-  password: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres'),
+  password: z.string().min(8, 'Deve conter pelo menos 8 caracteres'),
 });
 
 export default function SignIn() {
-
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       email: '',
       password: '',
-    }
+    },
   });
 
-  const handleSubmit = form.handleSubmit(async (data) => {
-    console.log(data);
+  const { signIn } = useAuth();
+
+  const handleSubmit = form.handleSubmit(async (formData) => {
+    try {
+      await signIn(formData);
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   return (
@@ -76,7 +82,9 @@ export default function SignIn() {
           <Button onPress={router.back} size="icon" color="gray">
             <ArrowLeftIcon size={20} color={colors.black[700]} />
           </Button>
-          <Button className="flex-1" onPress={handleSubmit}>Entrar</Button>
+          <Button className="flex-1" onPress={handleSubmit}>
+            Entrar
+          </Button>
         </View>
       </View>
     </AuthLayout>

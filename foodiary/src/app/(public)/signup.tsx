@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react-native';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { AuthLayout } from '../../components/auth-layout';
 import { Button } from '../../components/button';
 import { GenderStep } from '../../components/sign-up-steps/gender-step';
@@ -15,6 +15,7 @@ import { HeightStep } from '../../components/sign-up-steps/height-step';
 import { WeightStep } from '../../components/sign-up-steps/weight-step';
 import { ActivityLevelStep } from '../../components/sign-up-steps/activity-level-step';
 import { AccountStep } from '../../components/sign-up-steps/account-step';
+import { useAuth } from '../../hooks/use-auth';
 
 export default function SignUp() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -81,8 +82,35 @@ export default function SignUp() {
     setCurrentStepIndex(prevState => prevState + 1);
   }
 
+  const { signUp } = useAuth();
+
+  const handleSubmit = form.handleSubmit(async (formData) => {
+    try {
+      const [day, month, year] = formData.birthDate.split('/')
+
+      await signUp({
+        height: Number(formData.height),
+        weight: Number(formData.weight),
+        activityLevel: Number(formData.activityLevel),
+        gender: formData.gender,
+        goal: formData.goal,
+        birthDate: `${year}-${month}-${day}`,
+        account: {
+          email: formData.email,
+          name: formData.name,
+          password: formData.password,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Erro ao criar a conta. Tente novamente.');
+    }
+  });
+
   const currentStep = steps[currentStepIndex];
   const isLastStep = currentStepIndex === steps.length - 1;
+
+  console.log(form.formState.errors)
 
   return (
     <AuthLayout
@@ -101,7 +129,7 @@ export default function SignUp() {
           </Button>
           
           {isLastStep ? (
-            <Button className="flex-1" onPress={handleNextStep}>
+            <Button className="flex-1" onPress={handleSubmit}>
               Criar conta
             </Button>
           ) : (
