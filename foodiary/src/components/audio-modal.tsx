@@ -1,3 +1,4 @@
+
 import { StatusBar } from 'expo-status-bar';
 import { CheckIcon, MicIcon, PauseIcon, PlayIcon, SquareIcon, Trash2Icon, XIcon } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -7,6 +8,9 @@ import { colors } from '../styles/colors';
 import { cn } from '../utils/cn';
 import { Button } from './button';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioPlayer, useAudioRecorder, useAudioRecorderState } from 'expo-audio';
+import { useMutation } from '@tanstack/react-query';
+import { httpClient } from '../services/http-client';
+import { useCreateMeal } from '../hooks/use-create-meal';
 
 interface IAudioModalProps {
   open: boolean;
@@ -18,14 +22,16 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
 
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const { isRecording } = useAudioRecorderState(audioRecorder);
-
   const player = useAudioPlayer(audioUri);
+
+  const { createMeal, isLoading } = useCreateMeal('audio/m4a');
 
   useEffect(() => {
     (async () => {
       const status = await AudioModule.requestRecordingPermissionsAsync();
+
       if (!status.granted) {
-        Alert.alert('A permissão para acessar o microfone foi negada');
+        Alert.alert('A permissão para acessar o microfone foi negada.');
       }
 
       setAudioModeAsync({
@@ -134,7 +140,7 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
                   </Button>
                 )}
 
-                <Button size="icon">
+                <Button size="icon" onPress={() => createMeal(audioUri)} disabled={isLoading}>
                   <CheckIcon size={20} color={colors.black[700]} />
                 </Button>
               </View>
