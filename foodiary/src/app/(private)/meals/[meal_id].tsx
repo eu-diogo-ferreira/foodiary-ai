@@ -23,12 +23,14 @@ type Meal = {
 }
 
 export default function MealDetails() {
-  const { meal_id } = useLocalSearchParams();
+  const { meal_id: mealId } = useLocalSearchParams();
 
   const { data: meal, isFetching } = useQuery({
-    queryKey: ['meal'],
+    queryKey: ['meal', mealId],
+    staleTime: 500000,
     queryFn: async () => {
-      const { data } = await httpClient.get<{ meal: Meal }>(`/meals/${meal_id}`);
+      const { data } = await httpClient.get<{ meal: Meal }>(`/meals/${mealId}`);
+
       return data.meal;
     },
     refetchInterval: (query) => {
@@ -37,7 +39,7 @@ export default function MealDetails() {
       }
 
       return 2_000;
-    }
+    },
   });
 
   if (isFetching || meal?.status !== 'success') {
@@ -52,11 +54,9 @@ export default function MealDetails() {
   return (
     <View className="flex-1 items-center justify-center">
       <Text>
-        Detalhes da refeição: {meal_id}
+        {JSON.stringify(meal, null, 2)}
       </Text>
-
-      <Text>{JSON.stringify(meal, null, 2)}</Text>
-
+      
       <Button onPress={router.back}>
         Voltar
       </Button>
