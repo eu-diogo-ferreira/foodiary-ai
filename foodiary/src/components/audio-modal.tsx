@@ -11,6 +11,7 @@ import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioPlayer, useAu
 import { useMutation } from '@tanstack/react-query';
 import { httpClient } from '../services/http-client';
 import { useCreateMeal } from '../hooks/use-create-meal';
+import { router } from 'expo-router';
 
 interface IAudioModalProps {
   open: boolean;
@@ -24,7 +25,13 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
   const { isRecording } = useAudioRecorderState(audioRecorder);
   const player = useAudioPlayer(audioUri);
 
-  const { createMeal, isLoading } = useCreateMeal('audio/m4a');
+  const { createMeal, isLoading } = useCreateMeal({
+    fileType: 'audio/m4a',
+    onSuccess: (mealId) => {
+      router.push(`/meals/${mealId}`);
+      handleCloseModal();
+    },
+  });
 
   useEffect(() => {
     (async () => {

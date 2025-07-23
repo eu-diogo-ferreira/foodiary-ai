@@ -7,6 +7,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../styles/colors';
 import { Button } from './button';
 import { useCreateMeal } from '../hooks/use-create-meal';
+import { router } from 'expo-router';
 
 interface ICameraModalProps {
   open: boolean;
@@ -17,7 +18,13 @@ export function CameraModal({ onClose, open }: ICameraModalProps) {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
 
-  const { createMeal, isLoading } = useCreateMeal('image/jpeg');
+  const { createMeal, isLoading } = useCreateMeal({
+    fileType: 'image/jpeg',
+    onSuccess: (mealId) => {
+      router.push(`/meals/${mealId}`);
+      handleCloseModal();
+    },
+  });
   
   const cameraRef = useRef<CameraView>(null);
 

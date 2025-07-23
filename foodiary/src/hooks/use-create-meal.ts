@@ -7,7 +7,12 @@ type CreatedMealResponse = {
   presignedUrl: string;
 }
 
-export function useCreateMeal(fileType: 'audio/m4a' | 'image/jpeg') {
+type CreateMealParams = {
+  fileType: 'audio/m4a' | 'image/jpeg';
+  onSuccess: (mealId: string) => void;
+}
+
+export function useCreateMeal({ fileType, onSuccess }: CreateMealParams) {
   const { mutateAsync: createMeal, isPending: isLoading } = useMutation({
     mutationFn: async (uri: string) => {
       const { data } = await httpClient.post<CreatedMealResponse>('/meals', {
@@ -18,6 +23,11 @@ export function useCreateMeal(fileType: 'audio/m4a' | 'image/jpeg') {
         httpMethod: 'PUT',
         uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
       });
+
+      return { mealId: data.mealId };
+    },
+    onSuccess: ({ mealId }) => {
+      onSuccess(mealId);
     },
   });
 
