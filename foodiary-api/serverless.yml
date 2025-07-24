@@ -64,7 +64,7 @@ functions:
     handler: src/functions/create-meal.handler
     events:
       - httpApi:
-          path: /meal
+          path: /meals
           method: POST
 
   listMeal:
@@ -92,6 +92,7 @@ functions:
   
   processMeal:
     handler: src/functions/process-meal.handler
+    timeout: 30
     events:
       - sqs:
           arn: !GetAtt MealsQueue.Arn

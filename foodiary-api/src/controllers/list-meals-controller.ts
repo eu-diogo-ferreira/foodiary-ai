@@ -1,9 +1,8 @@
 import z from 'zod';
-import { endOfDay } from 'date-fns';
 import {  HttpResponse, ProtectedHttpRequest } from "../types/http";
 import { badRequest, ok } from "../utils/http";
 import { db } from '../db';
-import { and, eq, gte, lte } from 'drizzle-orm';
+import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { mealsTable } from '../db/schema';
 
 const schema = z.object({
@@ -34,7 +33,8 @@ export class ListMealsController {
                 eq(mealsTable.status, 'success'),
                 gte(mealsTable.createdAt, data.date),
                 lte(mealsTable.createdAt, endDate)
-            )
+            ),
+            orderBy: [desc(mealsTable.createdAt)]
         });
 
         return ok({ meals });
