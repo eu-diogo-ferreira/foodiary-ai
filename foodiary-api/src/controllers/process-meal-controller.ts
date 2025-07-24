@@ -6,7 +6,7 @@ import { mealsTable } from "../db/schema";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../clients/s3-client";
 import { Readable } from "stream";
-import { transcribeAudio } from "../services/ai";
+import { getMealDetailsFromText, transcribeAudio } from "../services/ai";
 
 const schema = z.object({
   fileKey: z.string(),
@@ -25,71 +25,73 @@ export class ProcessMealController {
     });
 
     if (!meal) {
-      throw new Error("meal not found to process.");
+      throw new Error('Meal not found.');
     }
 
-    if (meal.status === "failed" || meal.status === "success") {
-      // aws should remove from queue
+    if (meal.status === 'failed' || meal.status === 'success') {
       return;
     }
 
     await db
       .update(mealsTable)
-      .set({
-        status: "processing",
-      })
+      .set({ status: 'processing' })
       .where(eq(mealsTable.id, meal.id));
 
     try {
-      if (meal.inputType === "audio") {
-        const command = new GetObjectCommand({
-          Bucket: process.env.BUCKET_NAME,
-          Key: meal.inputFileKey,
-        });
+      let icon = '';
+      let name = '';
+      let foods = [];
 
-        const { Body } = await s3Client.send(command);
-
-        if (!Body || !(Body instanceof Readable)) {
-          throw new Error("Cannot load the audio file.");
-        }
-
-        const chunks = [];
-        for await (const chunk of Body) {
-          chunks.push(chunk);
-        }
-
-        const audioFileBuffer = Buffer.concat(chunks);
-
+      if (meal.inputType === 'audio') {
+        const audioFileBuffer = await this.downloadAudioFile(meal.inputFileKey);
         const transcription = await transcribeAudio(audioFileBuffer);
 
-        console.log("[INFO] ai transcription", { transcription });
+        const mealDetails = await getMealDetailsFromText({
+          createdAt: new Date(),
+          text: transcription,
+        });
+
+        icon = mealDetails.icon;
+        name = mealDetails.name;
+        foods = mealDetails.foods;
       }
 
       await db
         .update(mealsTable)
         .set({
-          status: "success",
-          name: "Café da manhã",
-          icon: "🍞",
-          foods: [
-            {
-              name: "Pão",
-              quantity: "2 fatias",
-              calories: 100,
-              proteins: 200,
-              carbohydrates: 300,
-              fats: 400,
-            },
-          ],
+          status: 'success',
+          name,
+          icon,
+          foods,
         })
         .where(eq(mealsTable.id, meal.id));
     } catch (error) {
+      console.log(error);
+
       await db
         .update(mealsTable)
-        .set({
-          status: "failed",
-        })
+        .set({ status: 'failed' })
         .where(eq(mealsTable.id, meal.id));
     }
+  }
+
+  private static async downloadAudioFile(fileKey: string) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: fileKey,
+    });
+
+    const { Body } = await s3Client.send(command);
+
+    if (!Body || !(Body instanceof Readable)) {
+      throw new Error('Cannot load the audio file.');
+    }
+
+    const chunks = [];
+    for await (const chunk of Body) {
+      chunks.push(chunk);
+    }
+
+    return Buffer.concat(chunks);
   }
 }
