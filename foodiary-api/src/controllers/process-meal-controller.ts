@@ -6,7 +6,8 @@ import { mealsTable } from "../db/schema";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../clients/s3-client";
 import { Readable } from "stream";
-import { getMealDetailsFromText, transcribeAudio } from "../services/ai";
+import { getMealDetailsFromImage, getMealDetailsFromText, transcribeAudio } from "../services/ai";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const schema = z.object({
   fileKey: z.string(),
@@ -56,6 +57,19 @@ export class ProcessMealController {
         foods = mealDetails.foods;
       }
 
+      if (meal.inputType === 'picture') {
+        const imageURL = await this.getImageURL(meal.inputFileKey);
+
+        const mealDetails = await getMealDetailsFromImage({
+          createdAt: meal.createdAt,
+          imageURL,
+        });
+
+        icon = mealDetails.icon;
+        name = mealDetails.name;
+        foods = mealDetails.foods;
+      }
+
       await db
         .update(mealsTable)
         .set({
@@ -93,5 +107,14 @@ export class ProcessMealController {
     }
 
     return Buffer.concat(chunks);
+  }
+
+  private static async getImageURL(fileKey: string) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: fileKey,
+    });
+
+    return getSignedUrl(s3Client, command, { expiresIn: 600 });
   }
 }
