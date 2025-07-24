@@ -39,6 +39,20 @@ O **Foodiary** é uma aplicação inovadora de registro e análise nutricional d
 - **IA**: OpenAI GPT-4o e Whisper para análise
 - **Deploy**: AWS Lambda Functions
 
+## 🎨 Design do Aplicativo
+
+O design completo do aplicativo móvel foi cuidadosamente elaborado no Figma, incluindo todas as telas, fluxos de usuário e componentes da interface.
+
+**👀 Visualizar Design:** [Foodiary - Design no Figma](https://www.figma.com/design/XAbwiCeGZGj23GffR8fdfr/Foodiary---JStack-LAB-V1?node-id=0-1&t=13rGtWHooOK3j5M1-1)
+
+### Principais Telas Incluídas:
+- 🔐 **Autenticação**: Login e cadastro
+- 🏠 **Dashboard**: Visão geral nutricional
+- 📸 **Captura**: Interface para foto/áudio
+- 📊 **Análise**: Resultados da IA
+- 👤 **Perfil**: Configurações do usuário
+- 📱 **Responsivo**: Adaptado para diferentes dispositivos
+
 ## 🚀 Tecnologias Utilizadas
 
 ### Frontend (React Native)
