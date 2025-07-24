@@ -23,7 +23,7 @@ export function MealCard({ id, name, icon, foods, createdAt }: IMealCardProps) {
             <Text>{icon}</Text>
           </View>
 
-          <View>
+          <View className="flex-1">
             <Text className="text-base font-sans-regular text-gray-700">
               {name}
             </Text>
